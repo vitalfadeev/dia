@@ -1,0 +1,14 @@
+# Specify filepatterns you want git to ignore.
+
+
+.dub
+docs.json
+__dummy.html
+docs/
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
+mixins.d
+dub.selections.json
