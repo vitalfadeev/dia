@@ -8,69 +8,89 @@ import op;
 import area;
 import e;
 import block;
-import ins;
+import k;
+import d;
 import name;
+import vcc;
 
 
 // 
 class Tree
 {
-    Block* block = new Block();
+    Block*[] blocks;
 
     this()
     {
         // data
-        Data d;
-        create_data( d );
+        Datas ds;
+        create_data( ds );
 
-        // self
-        block.rect = SDL_Rect( 0, 0, 32*5, 32*3 );
-
-        // name
-        block.name = new name.Name();
-        block.name.rect = SDL_Rect( 0, 0, 32*5, 32*1 );
-        block.name.text = d.name;
-
-        // pins
+        int xx;
+        foreach ( ref d; ds.ds )
         {
-            int i;
-            foreach ( ref ins; d.ins )
+            auto block = new Block();
+            blocks ~= block;
+
+            // self
+            block.rect = SDL_Rect( xx, 0, 32*5, 32*4 );
+
+            // name
+            block.name = new name.Name();
+            block.name.rect = SDL_Rect( xx, 0, 32*5, 32*1 );
+            block.name.text = d.name;
+
+            // vcc
+            block.vcc = new Vcc();
+
+            // ins
             {
-                auto in_ = new Ins();
-                in_.text = ins.name;
-                in_.type = ins.type;
-                in_.rect = SDL_Rect( 0, 32+i*32, 32*2, 32 );
-                block.ins ~= in_;
+                int i;
+                foreach ( ref ins; d.ins )
+                {
+                    auto k1 = new K();
+                    k1.text = ins.name;
+                    k1.type = ins.type;
+                    k1.rect = SDL_Rect( xx, 32+i*32, 32*2, 32 );
+                    block.ks ~= k1;
 
-                i++;
+                    i++;
+                }
             }
-        }
 
-        // pins
-        {
-            int i;
-            foreach ( ref outs; d.outs )
+            // outs
             {
-                auto outs_ = new Ins();
-                outs_.text = outs.name;
-                outs_.type = outs.type;
-                outs_.rect = SDL_Rect( 32*3, 32+i*32, 32*2, 32 );
-                block.outs ~= outs_;
+                int i;
+                foreach ( ref outs; d.outs )
+                {
+                    auto d1 = new D();
+                    d1.text = outs.name;
+                    d1.type = outs.type;
+                    d1.rect = SDL_Rect( xx+32*3, 32+i*32, 32*2, 32 );
+                    block.ds ~= d1;
 
-                i++;
+                    i++;
+                }
             }
+        
+            xx += 32*10;
         }
     }
 
     //override
     size_t see( SDL_Renderer* renderer )
     {
-        return block.see( renderer );
+        foreach ( block; blocks )
+            block.see( renderer );
+
+        return 0;
     }
 
     size_t rect_see( SDL_Renderer* renderer, SDL_Rect* rect )
     {
-        return block.rect_see( renderer, rect );
+        foreach ( block; blocks )
+            block.rect_see( renderer, rect );
+
+        return 0;
     }
 
     void event( ref SDL_Event event )
@@ -84,7 +104,8 @@ class Tree
             case SDL_MOUSEBUTTONDOWN: 
                 op  = OP.MOUSE_KEY; 
                 arg = event.button.button;
-                block.er( block, op, arg, arg2 );
+                foreach ( block; blocks )
+                    block.er( block, op, arg, arg2 );
                 break;
             default:
         }

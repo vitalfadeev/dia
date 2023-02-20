@@ -198,7 +198,8 @@ E*[] find_objs_at_rect( ref Tree tree, SDL_Rect* rect )
             found ~= e;
     }
 
-    scan_in_deep( cast(E*)tree.block, &cb );
+    foreach ( block; tree.blocks )
+        scan_in_deep( cast(E*)block, &cb );
 
     return found;
 }

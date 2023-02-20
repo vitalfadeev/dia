@@ -11,17 +11,30 @@ import op;
 import e;
 import controlpoint;
 import name;
-import ins;
+import k;
+import d;
+import vcc;
 
 
+// ----------
+//   Block
+// ----------
+// x
+// y
+// w
+// h
+// -
+// see    see
+// ----------
 struct Block
 {
     mixin EOBJECT;
 
     ControlPoint*[9] cps;
-    Name*  name;
-    Ins*[] ins;
-    Ins*[] outs;
+    Name* name;
+    K*[]  ks;
+    D*[]  ds;
+    Vcc*  vcc;
 }
 
 size_t _hit_test( Block* This, size_t op, size_t arg, size_t arg2 )
@@ -38,14 +51,14 @@ size_t _hit_test( Block* This, size_t op, size_t arg, size_t arg2 )
 
 
     // in
-    foreach ( ref e; This.ins )
-        if ( e.er( e, op, arg, arg2 ) )
-            return cast( size_t )e;
+    foreach ( ref k; This.ks )
+        if ( k.er( k, op, arg, arg2 ) )
+            return cast( size_t )k;
 
     // out
-    foreach ( ref e; This.outs )
-        if ( e.er( e, op, arg, arg2 ) )
-            return cast( size_t )e;
+    foreach ( ref d; This.ds )
+        if ( d.er( d, op, arg, arg2 ) )
+            return cast( size_t )d;
 
     return super_er( This, op, arg, arg2 );
 }
@@ -103,12 +116,12 @@ size_t _see( Block* This, size_t op, size_t arg, size_t arg2 )
     This.name.er( This.name, op, arg, arg2 );
 
     // in
-    foreach ( ref e; This.ins )
-        e.er( e, op, arg, arg2 );
+    foreach ( ref k; This.ks )
+        k.er( k, op, arg, arg2 );
 
     // out
-    foreach ( ref e; This.outs )
-        e.er( e, op, arg, arg2 );
+    foreach ( ref d; This.ds )
+        d.er( d, op, arg, arg2 );
 
     // Childs
     {
@@ -166,11 +179,16 @@ void del_controls( Block* block )
 //
 // struct Data
 //   string name; // Block
-//   In_[] ins;
+//   In_[] gains;
 //
 // struct In_
 //   string name
 //   string type
+
+struct Datas
+{
+    Data[] ds;
+}
 
 struct Data
 {
@@ -191,7 +209,30 @@ struct Out_
    string type; // int
 }
 
-void create_data( ref Data d )
+void create_mouse( ref Data d )
+{
+    d = Data();
+    d.name = "Mouse";
+
+    // in
+    // out
+    auto out1 = Out_();
+         out1.name = "x";
+         out1.type = "int";
+    d.outs ~= out1;
+
+    auto out2 = Out_();
+         out2.name = "y";
+         out2.type = "int";
+    d.outs ~= out2;
+
+    auto out3 = Out_();
+         out3.name = "key";
+         out3.type = "int";
+    d.outs ~= out3;
+}
+
+void create_close( ref Data d )
 {
     d = Data();
     d.name = "Close";
@@ -207,6 +248,11 @@ void create_data( ref Data d )
          in2.type = "int";
     d.ins ~= in2;
 
+    auto in3 = In_();
+         in3.name = "key";
+         in3.type = "int";
+    d.ins ~= in3;
+
     // out
     auto out1 = Out_();
          out1.name = "x";
@@ -217,6 +263,17 @@ void create_data( ref Data d )
          out2.name = "y";
          out2.type = "int";
     d.outs ~= out2;
+}
+
+void create_data( ref Datas ds )
+{
+    Data d1;
+    create_mouse(d1);
+    ds.ds ~= d1;
+
+    Data d2;
+    create_close(d2);
+    ds.ds ~= d2;
 }
 
 //pragma( msg, module_name!() );

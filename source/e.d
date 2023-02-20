@@ -333,6 +333,20 @@ size_t see_rect( SDL_Renderer* renderer, ref SDL_Rect rect )
     return 0;
 }    
 
+size_t see_round( SDL_Renderer* renderer, SDL_Point p, int size )
+{
+    // SDL2_gfx 
+    SDL_Rect rect;
+             rect.x = p.x - size/2;
+             rect.y = p.y - size/2;
+             rect.w = size;
+             rect.h = size;
+
+    SDL_RenderDrawRect( renderer, &rect );
+
+    return 0;
+}    
+
 //void push_see(T)( T* This )
 //{
 //    // Create new SDL render event

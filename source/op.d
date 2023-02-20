@@ -57,4 +57,6 @@ enum OP : size_t
     MOVE,
     CP_MOVED,
     FOCUS,
+    VCC_ON,
+    VCC_OFF,
 }
